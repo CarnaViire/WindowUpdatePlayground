@@ -14,8 +14,10 @@ namespace WindowUpdateClient
             string ip = args[0];
             int port = int.Parse(args[1]);
 
-            int initialWindowSize = 65535;
+            int initialWindowSize = 8 * 1024 * 1024;
             int windowUpdateTreshold = initialWindowSize / 8;
+
+            Stopwatch s = Stopwatch.StartNew();
 
             for (int i = 0; i < 5; ++i)
             {
@@ -38,7 +40,7 @@ namespace WindowUpdateClient
                     CancellationTokenSource cts = new CancellationTokenSource();
                     CancellationToken token = cts.Token;
 
-                    Stopwatch s = Stopwatch.StartNew();
+                    s.Restart();
 
                     socket.Send(BitConverter.GetBytes(initialWindowSize)); // init
 
@@ -80,6 +82,7 @@ namespace WindowUpdateClient
                             }
                             catch (OperationCanceledException)
                             {
+                                s.Stop();
                                 Console.WriteLine("Done");
                                 break;
                             }
@@ -102,7 +105,7 @@ namespace WindowUpdateClient
                         }
                     }
 
-                    Console.WriteLine($"WINDOW_UPDATE {windowUpdateTreshold/1024} Kb: Elapsed {s.ElapsedMilliseconds} ms -- {(totalRead/s.ElapsedMilliseconds*1000.0 / 1024 / 1024)} Mb/s");
+                    Console.WriteLine($"WINDOW_UPDATE {windowUpdateTreshold/1024} Kb: Elapsed {s.ElapsedMilliseconds} ms -- {(totalRead * 1000.0 / s.ElapsedMilliseconds / 1024 / 1024)} Mb/s");
                 }
             }
         }
