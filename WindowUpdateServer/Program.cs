@@ -19,7 +19,7 @@ namespace WindowUpdateServer
             byte[] file = new byte[fileSize];
             random.NextBytes(file);
 
-            using (var server = new Socket(AddressFamily.InterNetworkV6, SocketType.Stream, ProtocolType.Tcp))
+            using (var server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp))
             {
                 server.Bind(new IPEndPoint(IPAddress.Parse(ip), port));
                 Console.WriteLine($"[{DateTime.Now.TimeOfDay}] Socket bound to {server.LocalEndPoint}");
